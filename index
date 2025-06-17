@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registo Formações</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>REGISTO DE FORMAÇÕES</h1>
+        </header>
+        <div class="form-container">
+            <form id="formacaoForm">
+                <div class="form-row">
+                    <label for="user">User</label>
+                    <input type="text" id="user" placeholder="Nome do formando">
+                    
+                    <label for="data_inicio">Data Início</label>
+                    <input type="date" id="data_inicio">
+                    
+                    <label for="data_fim">Data Fim</label>
+                    <input type="date" id="data_fim">
+                    
+                    <label for="formacao">Formação</label>
+                    <input type="text" id="formacao" placeholder="Nome da formação">
+                    
+                    <label for="tipo_acao">Tipo de Ação</label>
+                    <select id="tipo_acao">
+                        <option value="" selected disabled>Selecione...</option>
+                        <option value="Atendimento Acompanhado">Atendimento Acompanhado</option>
+                        <option value="Briefing">Briefing</option>
+                        <option value="Briefing Polivalência">Briefing Polivalência</option>
+                        <option value="Coaching">Coaching</option>
+                        <option value="Formação on job">Formação on job</option>
+                        <option value="Formação Sala">Formação Sala</option>
+                        <option value="Side by side">Side by side</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="descricao">Descrição</label>
+                    <input type="text" id="descricao" placeholder="Descrição da formação">
+                    
+                    <label for="metodologia">Metodologia</label>
+                    <input type="text" id="metodologia" placeholder="Metodologia utilizada">
+                    
+                    <label for="entidade">Entidade</label>
+                    <select id="entidade">
+                        <option value="" selected disabled>Selecione...</option>
+                        <option value="Área Técnica">Área Técnica</option>
+                        <option value="Entidade Externa">Entidade Externa</option>
+                        <option value="M-Learning">M-Learning</option>
+                        <option value="Newspring - Operativa">Newspring - Operativa</option>
+                    </select>
+                    
+                    <label for="formador">Formador</label>
+                    <input type="text" id="formador" placeholder="Nome do formador">
+                    
+                    <label for="horas">Nº de horas</label>
+                    <input type="number" id="horas" placeholder="Horas de formação">
+                    
+                    <label for="mes">Mês</label>
+                    <select id="mes">
+                        <option value="" selected disabled>Selecione...</option>
+                        <option value="Janeiro">Janeiro</option>
+                        <option value="Fevereiro">Fevereiro</option>
+                        <option value="Março">Março</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Maio">Maio</option>
+                        <option value="Junho">Junho</option>
+                        <option value="Julho">Julho</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Setembro">Setembro</option>
+                        <option value="Outubro">Outubro</option>
+                        <option value="Novembro">Novembro</option>
+                        <option value="Dezembro">Dezembro</option>
+                    </select>
+                    
+                    <label for="ano">Ano</label>
+                    <select id="ano">
+                        <option value="" selected disabled>Selecione...</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                    </select>
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="salvarDados()" style="background: url('submeter.png') no-repeat center; background-size: contain; border: none; width: 200px; height: 60px;"> </button>
+                    <button type="button" onclick="exportarXLSX()" style="background: url('extrair.png') no-repeat center; background-size: contain; border: none; width: 200px; height: 60px;"> </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://gcetkkmmyrtbyznslwca.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZXRra21teXJ0Ynl6bnNsd2NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2OTkwMzYsImV4cCI6MjA1NjI3NTAzNn0.4jB1YkQQsp_Iph8CzlT7XQnT20tgnKs1TS-gfQAMa4I";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function salvarDados() {
+            let registro = {
+                user: document.getElementById('user').value,
+                data_inicio: document.getElementById('data_inicio').value,
+                data_fim: document.getElementById('data_fim').value,
+                formacao: document.getElementById('formacao').value,
+                tipo_acao: document.getElementById('tipo_acao').value,
+                descricao: document.getElementById('descricao').value,
+                metodologia: document.getElementById('metodologia').value,
+                entidade: document.getElementById('entidade').value,
+                formador: document.getElementById('formador').value,
+                horas: document.getElementById('horas').value,
+                mes: document.getElementById('mes').value,
+                ano: document.getElementById('ano').value
+            };
+
+            let { error } = await supabase.from('registos_formacoes').insert([registro]);
+
+            if (error) {
+                alert("Erro ao salvar os dados.");
+                console.error("Erro ao salvar:", error);
+            } else {
+                alert("Dados salvos com sucesso!");
+                document.getElementById('formacaoForm').reset();
+            }
+        }
+
+        async function exportarXLSX() {
+            let { data, error } = await supabase.from('registos_formacoes').select('*');
+
+            if (error) {
+                alert("Erro ao buscar dados do Supabase.");
+                console.error("Erro ao buscar dados:", error);
+                return;
+            }
+
+            let ws = XLSX.utils.json_to_sheet(data);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "RegistosFormacoes");
+            XLSX.writeFile(wb, "RegistosFormacoes.xlsx");
+        }
+    </script>
+</body>
+</html>
